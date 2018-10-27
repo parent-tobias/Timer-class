@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>Console clock</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="./timer.css" type="text/css"/>
+</head>
+
+<body>
+  <h1>
+    Simple countdown timer, using ES6 classes
+  </h1>
+  <div class="content-pane">
+    <div class="description">
+      <h2>
+        Description:
+      </h2>
+      <p>So I wanted to work on the pomodoro timer for FCC, but I wanted to change a few things. First, I want to build it to be library-agnostic, as much as possible. Second, I want to use "modern" javascript, as in ECMAScript6, as much as possible (or
+        where really feasible). Third, I wanted to make it more component based.</p>
+      <p>To that third point, I really want to start building components that follow what I'm starting to see as the three rules: Encapsulation, Delegation and Communication. Here's how I view those:</p>
+      <ul>
+        <li><strong>Encapsulation:</strong> Each component should be completely isolated from its siblings or ancestors.</li>
+        <li><strong>Delegation:</strong> Each component should be able to delegate activities to its own descendants.</li>
+        <li><strong>Communication:</strong> Each component should communicate with its ancestors.</li>
+      </ul>
+      <p>So here's the first of a few components: a Timer class. It may not seem impressive, but it's doing some pretty cool things. First, it emits custom events on tick, and on complete. Second, it can take callback functions from its parent for both of
+        those events. Third, it is built using ES6. Which is just cool.</p>
+      <p>There are a couple different ways this can be used, it really depends on your need. If you need to display a timer, simply pass in a format when the timer is created, fetch Timer.domEl, and you have a DOM node displayed as you wish, with custom
+        events. If, on the other hand, you want a timer that doesn't display anything, that works too. Simply pass in a couple callback functions for onTick and/or onComplete when creating the Timer, and we can work with that!</p>
+      <div class="timer-details-pane">
+        <div class="timer-details display-node">
+          <h3>Using the timer as a displayed DOM node</h3>
+          <p>Create a Timer using <span class='code'>let myTimer = new Timer({...})</span>. Timer receives an object with the following properties:</p>
+          <pre>
+{
+  title: &lt;String&gt;,
+  time:  &lt;Number&gt; (seconds to zero),
+  format:  &lt;String&gt; (displayed text for dom el)
+}
+          </pre>
+          <p>Note that the format can include a placeholder for hours, minutes and seconds -- simply include <span class="code">&quot;hh&quot;, &quot;mm&quot;, &quot;ss&quot;</span> (no quotes) in the string.</p>
+          <p>So, with <span class="code">myTimer</span> set up, we can call <span class="code">myTimer.start()</span> and start the timer decrementing. And we can create the DOM element for this timer, simply by calling <span class="code">.appendChild(myTimer.domEl)</span> from the containing DOM node. For the displayed DOM el,  we have DOM events to which we can listen. Those custom events are:</p>
+          <ul>
+            <li><span class="code">timer.tick</span></li>
+            <li><span class="code">timer.complete</span></li>
+          </ul>
+          <p>With those custom DOM events, we get a payload in Event.detail. The payload varies depending on the callback:</p>
+          <div class="timer-details-subpane">
+            <div class="timer-details">
+              <h4>timer.tick</h4>
+              <pre>
+{ 
+  title
+  time
+}
+              </pre>
+            </div>
+            <div class="timer-details">
+              <h4>timer.complete</h4>
+              <pre>
+{ 
+  title
+  timeElapsed
+}
+              </pre>
+            </div>
+          </div>
+        </div>
+        <div class="timer-details display-none">
+          <h3>Using the timer with no DOM node</h3>
+          <p>Create a Timer using <span class='code'>let myTimer = new Timer({...})</span>. Timer receives an object with the following properties:</p>
+          <pre>
+{
+  title: &lt;String&gt;,
+  time:  &lt;Number&gt; (seconds to zero),
+  onTick:  &lt;Function&gt; (tick event handler),
+  onComplete:  &lt;Function&gt; (complete event handler)
+}
+          </pre>
+          <p>Note that we COULD pass a format property in that object, but it would be meaningless, as we won't be displaying the timer.</p>
+          <p>Now that we have created a reference to our Timer, we can call <span class="code">myTimer.start()</span> to start the countdown, and at any point, we can call <span class="code">myTimer.stop()</span> to pause.</p>
+          <p>Within our callbacks, we can access the current time of <span class="code">myTimer</span> by simply getting <span class="code">myTimer.time</span>. And at any point, we can change the time remaining by setting <span class="code">myTimer.time = 3600;</span> (to, for example, set it to an hour: 60sec* 60min = 3600 seconds)</p>
+        </div>
+      </div>
+      Take a look at the <a href="./timer.js" target="_blank">timer source</a>, to see how it works!
+    </div>
+    <div id="timer1" class="timer"></div>
+    <div id="timer2" class="timer"><div class="title"></div><span></span></div>
+  </div>
+  <script src="timer.js"></script>
+  <script src="roman.js"></script>
+  <script>
+    // Create an instance of our Timer component. It is customizeable, and takes callbacks!
+    let timer = new Timer({
+      title: "My custom timer",
+      format:  "Time Remaining: hh hours, mm minutes, and ss seconds.",
+      time: 10,
+      onComplete: function() {
+        console.log("Howdy! your time is up!")
+      }
+    });
+    // Start that puppy!
+    timer.start();
+
+    // Of course, we want to see it doing something. Let's get its dom node and put that in.
+    let timerContainer = document.querySelector("#timer1");
+    timerContainer.appendChild(timer.domEl);
+
+    // Now that we have a DOM node, let's listen for my nifty custom event! Yaaay!
+    timer.domEl.addEventListener("timer.tick", function(evt) {
+      // Within the custom event, Event.detail contains custom timer info!
+      console.log(evt.detail);
+      if (evt.detail.time < 5) {timerContainer.style.backgroundColor = "red"}
+    })
+
+    timer.domEl.addEventListener("timer.complete", function() {
+      timerContainer.innerText = "Timer complete!"
+    })
+    
+    
+    
+    let timer2Container = document.querySelector("#timer2 span");
+    let timer2Title = document.querySelector("#timer2 .title");
+    let timer2 = new Timer({
+      title: "Another timer",
+      time: 5,
+      onComplete: () => {
+        // So let's do something when we're done.
+        console.log(timer2.title+" just let me know that it completed!");
+        
+        // And we can change the time, and restart the timer!
+        // We also have the option of changing the title and both callbacks.
+        timer2.time = 6;
+        timer2.title = "Yeah, and another timer";
+        timer2Title.innerText = timer2.title;
+        timer2.onComplete = function(){
+          alert("Are you still listening? "+timer2.title+ " is just finished. Go play!")
+        }
+        
+        timer2.start();
+
+      },
+      onTick: () => {
+        timer2Container.innerText = convertToRoman(timer2.time);
+      }
+    })
+    timer2.start();
+    timer2Title.innerText = timer2.title;
+  </script>
+
+</body>
+
+</html>

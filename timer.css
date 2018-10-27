@@ -1,0 +1,66 @@
+html {
+  font-family: "Arial", sans-serif;
+  font-size: 85%;
+}
+.timer {
+  position: fixed;
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+}
+#timer1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 10px;
+  top: 10px;
+  background-color: #ee3;
+}
+#timer1 span {
+  
+  padding: 10px;
+}
+#timer2 {
+  right: 10px;
+  top: 110px;
+  background-color: #e3e;
+}
+#timer2 span {
+  display: block;
+  position: relative;
+  top: 20%;
+  text-align: center;
+}
+.code {
+  font-family: monospace;
+  display: inline-block;
+}
+
+.timer-details-pane {
+  width: 80%;
+  background-color: #ccc;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.timer-details-subpane {
+  background-color: #ccc;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.timer-details {
+  padding: 2em;
+  background-color: #eee;
+}
+.timer-details pre {
+  width: 30%;
+  margin: 0;
+}
+
+.timer-details ul {
+  list-style-type: none;
+  margin-left: 10px;
+}
