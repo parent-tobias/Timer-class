@@ -6,7 +6,35 @@ Number.prototype.pad = function(size) {
   return s;
 }
 
-
+/******************
+ *  Timer class
+ *  Initialized with an Object, containing
+ *  {
+ *    title: String,
+ *    time: Number,
+ *    format: String (optional, assumes a displayed timer will be used),
+ *    onComplete: Function (optional),
+ *    onTick: Function (optional)
+ *  }
+ * 
+ * Available methods:
+ *   - Timer.start()
+ *   - Timer.stop()
+ * Methods as getters:
+ *   - Timer.domEl
+ * Methods as getters/setters:
+ *   - Timer.title
+ *   - Timer.time
+ *   - Timer.onComplete
+ *   - Timer.onTick
+ * 
+ * On the returned DOM element, there are a couple custom events that can
+ *   be listened for:
+ * 
+ *   - "timer.tick" 
+ *   - "timer.complete"
+ * 
+ ******************/
 class Timer {
   constructor({ title, time = 60, format = "hh:mm:ss", onComplete, onTick }) {
 
